@@ -8,14 +8,13 @@
 <meta name="theme-color" content="#16a34a">
 <style>
   :root{
-    --bg:#0a0f0a; --card:#0f1410; --border:#1f3321; --text:#e8f5e9; 
+    --bg:#0a0f0a; --card:#0f1410; --border:#1f3321; --text:#e8f5e9;
     --muted:#a7c4a9; --accent:#16a34a; --accent2:#22c55e; --danger:#ef4444;
   }
   body.light{
-    --bg:#f5f5f5; --card:#ffffff; --border:#d1d5db; --text:#1f2937; 
+    --bg:#f5f5f5; --card:#ffffff; --border:#d1d5db; --text:#1f2937;
     --muted:#6b7280; --accent:#16a34a; --accent2:#22c55e; --danger:#dc2626;
   }
-
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{background:var(--bg);color:var(--text);font-family:system-ui, sans-serif;padding-top:60px;padding-bottom:100px;transition:0.3s}
 
@@ -28,7 +27,6 @@
 .sidebar a:hover{color:var(--accent);background:var(--border)}
 .sidebar.closebtn{position:absolute;top:10px;right:20px;font-size:32px;color:var(--muted)}
 
-/* BOTTONE PAYPAL FISSO */
 .coffee-btn-out{
   position:fixed; bottom:20px; right:20px; z-index:999;
   background:#f59e0b; color:#000; padding:14px 20px;
@@ -63,17 +61,13 @@
   #second{width:2px;height:100px;background:var(--accent2);margin-left:-1px;z-index:1}
 .center{width:14px;height:14px;background:var(--accent);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);z-index:4;border:2px solid var(--bg)}
 
-/* STILE FOTO NEI SALVATAGGI */
 .foto-salvata{width:100%;border-radius:12px;margin-top:10px;border:2px solid var(--accent)}
 .msg-foto{color:var(--accent2);font-size:14px;text-align:center;margin-top:8px;font-weight:700}
 </style>
 </head>
 <body>
 
-<!-- Bottone fisso Paypal -->
-<a href="https://paypal.me/RiccardoBartuli" target="_blank" class="coffee-btn-out">
-  ☕ OFFRIMI UN CAFFÈ
-</a>
+<a href="https://paypal.me/RiccardoBartuli" target="_blank" class="coffee-btn-out">☕ OFFRIMI UN CAFFÈ</a>
 
 <div class="header">
   <button class="openbtn" onclick="openNav()">☰</button>
@@ -90,16 +84,11 @@
 <div class="main">
   <div class="card">
     <h3>Disco Orario</h3>
-    <div id="clock">
-      <div class="hand" id="hour" data-hand="hour"></div>
-      <div class="hand" id="minute" data-hand="minute"></div>
-      <div class="hand" id="second"></div>
-      <div class="center"></div>
-    </div>
+    <div id="clock"><div class="hand" id="hour"></div><div class="hand" id="minute"></div><div class="hand" id="second"></div><div class="center"></div></div>
     <label>Imposta orario scadenza</label>
     <input type="time" id="ora">
     <button id="btnTachi" onclick="avviaTachi()">AVVIA TACHI</button>
-    <p id="countdown" style="text-align:center;font-size:20px;margin-top:15px;font-weight:800;color:#16a34a"></p>
+    <p id="countdown" style="text-align:center;font-size:20px;margin-top:15px;font-weight:800;color:var(--accent)"></p>
   </div>
 
   <div class="card">
@@ -107,168 +96,43 @@
     <label>Seleziona Auto</label>
     <div class="row-auto">
       <select id="macchina"></select>
-      <button class="btn-icon aggiungi" onclick="aggiungiAuto()" title="Nuova Auto">➕</button>
-      <button class="btn-icon" onclick="rinominaAuto()" title="Rinomina">✏️</button>
-      <button class="btn-icon elimina" onclick="eliminaAuto()" title="Elimina Auto">🗑️</button>
+      <button class="btn-icon aggiungi" onclick="aggiungiAuto()">➕</button>
+      <button class="btn-icon" onclick="rinominaAuto()">✏️</button>
+      <button class="btn-icon elimina" onclick="eliminaAuto()">🗑️</button>
     </div>
-
     <button onclick="salvaPosizione()">📍 SALVA POSIZIONE</button>
     <button id="btnPortami" onclick="mostraMappa()" style="display:none">🗺️ PORTAMI ALLA MACCHINA</button>
     <button id="btnFoto" onclick="scattaFoto()" style="display:none">📸 SCATTA FOTO</button>
     <p id="msgFoto" class="msg-foto" style="display:none">Puoi vedere la tua foto nei salvataggi!</p>
-    <p id="status" style="text-align:center;margin-top:12px;color:#a7c4a9"></p>
+    <p id="status" style="text-align:center;margin-top:12px;color:var(--muted)"></p>
   </div>
 </div>
 
 <script>
-let macchinaAttiva = '';
-let timerTachi = null;
-let dragging = null;
-const clock = document.getElementById('clock');
-const oraInput = document.getElementById('ora');
-
-function S(k,v){localStorage.setItem(k,JSON.stringify(v))}
-function G(k){return JSON.parse(localStorage.getItem(k)||'null')}
-
+let macchinaAttiva = '';let timerTachi = null;let dragging = null;
+const clock = document.getElementById('clock');const oraInput = document.getElementById('ora');
+function S(k,v){localStorage.setItem(k,JSON.stringify(v))}function G(k){return JSON.parse(localStorage.getItem(k)||'null')}
 function openNav(){document.getElementById("mySidebar").style.width = "260px";}
 function closeNav(){document.getElementById("mySidebar").style.width = "0";}
 
-// GESTIONE AUTO
-function getNomiAuto(){
-  let nomi = G('parky_nomi');
-  if(!nomi){
-    nomi = {auto1: '🚗 Auto 1'};
-    S('parky_nomi', nomi);
-  }
-  return nomi;
-}
-
-function caricaSelectAuto(){
-  let nomi = getNomiAuto();
-  const select = document.getElementById('macchina');
-  select.innerHTML = '';
-  Object.keys(nomi).forEach(id => {
-    select.innerHTML += `<option value="${id}">${nomi[id]}</option>`;
-  });
-  if(!nomi[macchinaAttiva]) macchinaAttiva = Object.keys(nomi)[0];
-  select.value = macchinaAttiva;
-  aggiornaBottoniSalvataggio();
-}
-
-caricaSelectAuto();
-document.getElementById('macchina').onchange = e => {macchinaAttiva = e.target.value; aggiornaBottoniSalvataggio();};
-
-function aggiungiAuto(){
-  let nomi = getNomiAuto();
-  let nuovoId = 'auto_' + Date.now();
-  let numero = Object.keys(nomi).length + 1;
-  let nuovoNome = prompt(`Nome nuova auto:`, `🚘 Auto ${numero}`);
-  if(nuovoNome && nuovoNome.trim()!== ''){
-    nomi[nuovoId] = nuovoNome.trim();
-    S('parky_nomi', nomi);
-    macchinaAttiva = nuovoId;
-    caricaSelectAuto();
-  }
-}
-
-function rinominaAuto(){
-  let nomi = getNomiAuto();
-  let nuovoNome = prompt(`Rinomina ${nomi[macchinaAttiva]}:`, nomi[macchinaAttiva]);
-  if(nuovoNome && nuovoNome.trim()!== ''){
-    nomi[macchinaAttiva] = nuovoNome.trim();
-    S('parky_nomi', nomi);
-    caricaSelectAuto();
-  }
-}
-
-function eliminaAuto(){
-  let nomi = getNomiAuto();
-  if(Object.keys(nomi).length <= 1) return alert('Devi avere almeno 1 auto!');
-  if(confirm(`Vuoi eliminare "${nomi[macchinaAttiva]}" e la sua posizione?`)){
-    localStorage.removeItem('parky_'+macchinaAttiva);
-    localStorage.removeItem('parky_foto_'+macchinaAttiva);
-    delete nomi[macchinaAttiva];
-    S('parky_nomi', nomi);
-    caricaSelectAuto();
-  }
-}
-
-// MOSTRA/NASCONDI BOTTONI SE C'E' SALVATAGGIO
-function aggiornaBottoniSalvataggio(){
-  let pos = G('parky_'+macchinaAttiva);
-  if(pos){
-    document.getElementById('btnPortami').style.display = 'block';
-    document.getElementById('btnFoto').style.display = 'block';
-  } else {
-    document.getElementById('btnPortami').style.display = 'none';
-    document.getElementById('btnFoto').style.display = 'none';
-  }
-}
-
-// DISCO ORARIO CON SALVATAGGIO
-function aggiornaUI_Tachi(){
-  let fine = G('parky_tachi_fine');
-  if(fine){
-    let diff = fine - new Date().getTime();
-    if(diff <= 0) {
-      clearInterval(timerTachi);
-      S('parky_tachi_fine', null);
-      document.getElementById('countdown').innerText='SCADUTO! 🔔';
-      document.getElementById('btnTachi').innerText='AVVIA TACHI';
-      document.getElementById('btnTachi').className='';
-      return
-    }
-    let min = Math.floor(diff/60000);
-    let sec = Math.floor((diff%60000)/1000);
-    document.getElementById('countdown').innerText=`Mancano: ${min}m ${sec}s`;
-    document.getElementById('btnTachi').innerText='FERMA TACHI';
-    document.getElementById('btnTachi').className='off';
-  }
-}
-
-function avviaTachi(){
-  let fine = G('parky_tachi_fine');
-  if(fine){
-    clearInterval(timerTachi);
-    S('parky_tachi_fine', null);
-    document.getElementById('countdown').innerText='';
-    document.getElementById('btnTachi').innerText='AVVIA TACHI';
-    document.getElementById('btnTachi').className='';
-    return;
-  }
-
-  let ora = oraInput.value;
-  if(!ora) return alert('Seleziona orario');
-  let [h,m] = ora.split(':');
-  let fineData = new Date(); fineData.setHours(h,m,0);
-  if(fineData < new Date()) fineData.setDate(fineData.getDate() + 1);
-
-  S('parky_tachi_fine', fineData.getTime());
-  timerTachi = setInterval(aggiornaUI_Tachi, 1000);
-  aggiornaUI_Tachi();
-}
-
-// Ripristina tachi all'avvio
-window.onload = () => {
-  if(G('parky_tachi_fine')) timerTachi = setInterval(aggiornaUI_Tachi, 1000);
-  aggiornaUI_Tachi();
-  aggiornaBottoniSalvataggio();
-}
-// TEMA CHIARO/SCURO
-function applicaTema(){
-  let tema = localStorage.getItem('parky_tema') || 'dark';
-  if(tema === 'light') document.body.classList.add('light');
-  else document.body.classList.remove('light');
-}
+// TEMA
+function applicaTema(){let tema = localStorage.getItem('parky_tema') || 'dark';if(tema === 'light') document.body.classList.add('light');else document.body.classList.remove('light');}
 applicaTema();
-// DRAG LANCETTE
+
+function getNomiAuto(){let nomi = G('parky_nomi');if(!nomi){nomi = {auto1: '🚗 Auto 1'};S('parky_nomi', nomi);}return nomi;}
+function caricaSelectAuto(){let nomi = getNomiAuto();const select = document.getElementById('macchina');select.innerHTML = '';Object.keys(nomi).forEach(id => {select.innerHTML += `<option value="${id}">${nomi[id]}</option>`;});if(!nomi[macchinaAttiva]) macchinaAttiva = Object.keys(nomi)[0];select.value = macchinaAttiva;aggiornaBottoniSalvataggio();}
+caricaSelectAuto();document.getElementById('macchina').onchange = e => {macchinaAttiva = e.target.value; aggiornaBottoniSalvataggio();};
+function aggiungiAuto(){let nomi = getNomiAuto();let nuovoId = 'auto_' + Date.now();let numero = Object.keys(nomi).length + 1;let nuovoNome = prompt(`Nome nuova auto:`, `🚘 Auto ${numero}`);if(nuovoNome && nuovoNome.trim()!== ''){nomi[nuovoId] = nuovoNome.trim();S('parky_nomi', nomi);macchinaAttiva = nuovoId;caricaSelectAuto();}}
+function rinominaAuto(){let nomi = getNomiAuto();let nuovoNome = prompt(`Rinomina ${nomi[macchinaAttiva]}:`, nomi[macchinaAttiva]);if(nuovoNome && nuovoNome.trim()!== ''){nomi[macchinaAttiva] = nuovoNome.trim();S('parky_nomi', nomi);caricaSelectAuto();}}
+function eliminaAuto(){let nomi = getNomiAuto();if(Object.keys(nomi).length <= 1) return alert('Devi avere almeno 1 auto!');if(confirm(`Vuoi eliminare "${nomi[macchinaAttiva]}" e la sua posizione?`)){localStorage.removeItem('parky_'+macchinaAttiva);localStorage.removeItem('parky_foto_'+macchinaAttiva);delete nomi[macchinaAttiva];S('parky_nomi', nomi);caricaSelectAuto();}}
+function aggiornaBottoniSalvataggio(){let pos = G('parky_'+macchinaAttiva);if(pos){document.getElementById('btnPortami').style.display = 'block';document.getElementById('btnFoto').style.display = 'block';} else {document.getElementById('btnPortami').style.display = 'none';document.getElementById('btnFoto').style.display = 'none';}}
+
+function aggiornaUI_Tachi(){let fine = G('parky_tachi_fine');if(fine){let diff = fine - new Date().getTime();if(diff <= 0) {clearInterval(timerTachi);S('parky_tachi_fine', null);document.getElementById('countdown').innerText='SCADUTO! 🔔';document.getElementById('btnTachi').innerText='AVVIA TACHI';document.getElementById('btnTachi').className='';return}let min = Math.floor(diff/60000);let sec = Math.floor((diff%60000)/1000);document.getElementById('countdown').innerText=`Mancano: ${min}m ${sec}s`;document.getElementById('btnTachi').innerText='FERMA TACHI';document.getElementById('btnTachi').className='off';}}
+function avviaTachi(){let fine = G('parky_tachi_fine');if(fine){clearInterval(timerTachi);S('parky_tachi_fine', null);document.getElementById('countdown').innerText='';document.getElementById('btnTachi').innerText='AVVIA TACHI';document.getElementById('btnTachi').className='';return;}let ora = oraInput.value;if(!ora) return alert('Seleziona orario');let [h,m] = ora.split(':');let fineData = new Date(); fineData.setHours(h,m,0);if(fineData < new Date()) fineData.setDate(fineData.getDate() + 1);S('parky_tachi_fine', fineData.getTime());timerTachi = setInterval(aggiornaUI_Tachi, 1000);aggiornaUI_Tachi();}
+window.onload = () => {if(G('parky_tachi_fine')) timerTachi = setInterval(aggiornaUI_Tachi, 1000);aggiornaUI_Tachi();aggiornaBottoniSalvataggio();}
+
 oraInput.addEventListener('change', impostaLancetteDaInput);
-function impostaLancetteDaInput(){
-  let ora = oraInput.value; if(!ora) return;
-  let [h,m] = ora.split(':').map(Number);
-  document.getElementById('hour').style.transform = `rotate(${(h % 12) * 30 + m * 0.5}deg)`;
-  document.getElementById('minute').style.transform = `rotate(${m * 6}deg)`;
-}
+function impostaLancetteDaInput(){let ora = oraInput.value; if(!ora) return;let [h,m] = ora.split(':').map(Number);document.getElementById('hour').style.transform = `rotate(${(h % 12) * 30 + m * 0.5}deg)`;document.getElementById('minute').style.transform = `rotate(${m * 6}deg)`;}
 clock.addEventListener('mousedown', startDrag); clock.addEventListener('touchstart', startDrag);
 document.addEventListener('mousemove', drag); document.addEventListener('touchmove', drag);
 document.addEventListener('mouseup', stopDrag); document.addEventListener('touchend', stopDrag);
@@ -278,57 +142,20 @@ function drag(e){if(!dragging) return; e.preventDefault(); let touch = e.touches
 function stopDrag(){dragging = null;}
 function aggiornaInputDaLancette(){let hDeg = parseFloat(document.getElementById('hour').style.transform.match(/rotate\((.*)deg/)[1]); let mDeg = parseFloat(document.getElementById('minute').style.transform.match(/rotate\((.*)deg/)[1]); let ore = Math.floor(hDeg / 30) % 12; let minuti = Math.round(mDeg / 6) % 60; oraInput.value = String(ore).padStart(2,'0') + ':' + String(minuti).padStart(2,'0');}
 
-// GPS + FOTO
 function salvaPosizione(){
-  document.getElementById('status').innerText='Ricerca GPS...';
-  document.getElementById('msgFoto').style.display='none';
+  document.getElementById('status').innerText='Ricerca GPS...';document.getElementById('msgFoto').style.display='none';
   navigator.geolocation.getCurrentPosition(
     (p) => {
-      let nota = prompt("Vuoi aggiungere una nota? es: 'Parcheggio Blu - Piano -2'");
-      if(nota === null) nota = "";
+      let nota = prompt("Vuoi aggiungere una nota? es: 'Parcheggio Blu - Piano -2'");if(nota === null) nota = "";
       let data = {lat:p.coords.latitude, lon:p.coords.longitude, data:new Date().toLocaleString(), nota: nota, foto: G('parky_foto_'+macchinaAttiva) || null}
-      S('parky_'+macchinaAttiva, data);
-      document.getElementById('status').innerText=`✅ Salvato alle ${new Date().toLocaleTimeString()}`;
-      aggiornaBottoniSalvataggio();
+      S('parky_'+macchinaAttiva, data);document.getElementById('status').innerText=`✅ Salvato alle ${new Date().toLocaleTimeString()}`;aggiornaBottoniSalvataggio();
     },
-    () => {document.getElementById('status').innerText='❌ Errore GPS. Attiva posizione'},
-    {enableHighAccuracy: true, timeout: 15000}
+    () => {document.getElementById('status').innerText='❌ Errore GPS. Attiva posizione'},{enableHighAccuracy: true, timeout: 15000}
   )
 }
-
-function mostraMappa(){
-  let pos = G('parky_'+macchinaAttiva);
-  if(!pos) return alert('Salva prima una posizione');
-  window.open(`https://www.google.com/maps?q=${pos.lat},${pos.lon}`, '_blank');
-}
-
-function scattaFoto(){
-  let input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.capture = 'environment';
-  input.onchange = e => {
-    let file = e.target.files[0];
-    let reader = new FileReader();
-    reader.onload = () => {
-      S('parky_foto_'+macchinaAttiva, reader.result);
-      let data = G('parky_'+macchinaAttiva);
-      if(data){ data.foto = reader.result; S('parky_'+macchinaAttiva, data); }
-      document.getElementById('msgFoto').style.display='block'; // MOSTRA MESSAGGIO
-      setTimeout(()=>{document.getElementById('msgFoto').style.display='none'}, 4000); // sparisce dopo 4s
-    }
-    reader.readAsDataURL(file);
-  }
-  input.click();
-}
-
-</script>
-
-<script>
-// Registra Service Worker per installazione PC
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js');
-}
+function mostraMappa(){let pos = G('parky_'+macchinaAttiva);if(!pos) return alert('Salva prima una posizione');window.open(`https://www.google.com/maps?q=${pos.lat},${pos.lon}`, '_blank');}
+function scattaFoto(){let input = document.createElement('input');input.type = 'file';input.accept = 'image/*';input.capture = 'environment';input.onchange = e => {let file = e.target.files[0];let reader = new FileReader();reader.onload = () => {S('parky_foto_'+macchinaAttiva, reader.result);let data = G('parky_'+macchinaAttiva);if(data){ data.foto = reader.result; S('parky_'+macchinaAttiva, data); }document.getElementById('msgFoto').style.display='block';setTimeout(()=>{document.getElementById('msgFoto').style.display='none'}, 4000)};reader.readAsDataURL(file)};input.click();}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
 </script>
 </body>
 </html>
