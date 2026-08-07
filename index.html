@@ -7,17 +7,26 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16a34a">
 <style>
+  :root{
+    --bg:#0a0f0a; --card:#0f1410; --border:#1f3321; --text:#e8f5e9; 
+    --muted:#a7c4a9; --accent:#16a34a; --accent2:#22c55e; --danger:#ef4444;
+  }
+  body.light{
+    --bg:#f5f5f5; --card:#ffffff; --border:#d1d5db; --text:#1f2937; 
+    --muted:#6b7280; --accent:#16a34a; --accent2:#22c55e; --danger:#dc2626;
+  }
+
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{background:#0a0f0a;color:#e8f5e9;font-family:system-ui, sans-serif;padding-top:60px;padding-bottom:100px}
+  body{background:var(--bg);color:var(--text);font-family:system-ui, sans-serif;padding-top:60px;padding-bottom:100px;transition:0.3s}
 
-.header{position:fixed;top:0;left:0;width:100%;height:60px;background:#0f1410;border-bottom:2px solid #16a34a;z-index:998;display:flex;align-items:center;padding:0 15px}
-.header h2{color:#16a34a;margin:0 auto;font-weight:800;font-size:22px}
-.openbtn{font-size:26px;cursor:pointer;background:#16a34a;color:#000;padding:6px 12px;border:none;border-radius:10px;font-weight:900}
+.header{position:fixed;top:0;left:0;width:100%;height:60px;background:var(--card);border-bottom:2px solid var(--accent);z-index:998;display:flex;align-items:center;padding:0 15px}
+.header h2{color:var(--accent);margin:0 auto;font-weight:800;font-size:22px}
+.openbtn{font-size:26px;cursor:pointer;background:var(--accent);color:#000;padding:6px 12px;border:none;border-radius:10px;font-weight:900}
 
-.sidebar{height:100%;width:0;position:fixed;z-index:1000;top:0;left:0;background:#0f1410;overflow-x:hidden;transition:0.3s;padding-top:60px;border-right:2px solid #16a34a}
-.sidebar a{padding:16px 24px;text-decoration:none;font-size:18px;color:#a7c4a9;display:block;transition:0.2s}
-.sidebar a:hover{color:#16a34a;background:#1a241b}
-.sidebar.closebtn{position:absolute;top:10px;right:20px;font-size:32px;color:#a7c4a9}
+.sidebar{height:100%;width:0;position:fixed;z-index:1000;top:0;left:0;background:var(--card);overflow-x:hidden;transition:0.3s;padding-top:60px;border-right:2px solid var(--accent)}
+.sidebar a{padding:16px 24px;text-decoration:none;font-size:18px;color:var(--muted);display:block;transition:0.2s}
+.sidebar a:hover{color:var(--accent);background:var(--border)}
+.sidebar.closebtn{position:absolute;top:10px;right:20px;font-size:32px;color:var(--muted)}
 
 /* BOTTONE PAYPAL FISSO */
 .coffee-btn-out{
@@ -30,33 +39,33 @@
 .coffee-btn-out:active{transform:scale(0.95)}
 
 .main{padding:20px;max-width:500px;margin:0 auto}
-.card{background:#0f1410;border:2px solid #1f3321;padding:20px;border-radius:16px;margin:20px 0}
-  h3{color:#16a34a;margin-bottom:15px;font-size:20px;text-align:center}
-  button{background:#16a34a;border:0;padding:14px;border-radius:12px;font-weight:800;color:#000;width:100%;margin-top:12px;font-size:16px;cursor:pointer}
-  button:active{transform:scale(0.96);background:#22c55e}
-  button.off{background:#3f1a1a;color:#ef4444}
-  input{width:100%;padding:12px;border-radius:12px;border:2px solid #1f3321;background:#0a0f0a;color:#16a34a;margin-top:6px;font-size:16px;text-align:center}
-  label{font-size:14px;color:#a7c4a9}
+.card{background:var(--card);border:2px solid var(--border);padding:20px;border-radius:16px;margin:20px 0}
+  h3{color:var(--accent);margin-bottom:15px;font-size:20px;text-align:center}
+  button{background:var(--accent);border:0;padding:14px;border-radius:12px;font-weight:800;color:#000;width:100%;margin-top:12px;font-size:16px;cursor:pointer}
+  button:active{transform:scale(0.96);background:var(--accent2)}
+  button.off{background:#3f1a1a;color:var(--danger)}
+  input{width:100%;padding:12px;border-radius:12px;border:2px solid var(--border);background:var(--bg);color:var(--accent);margin-top:6px;font-size:16px;text-align:center}
+  label{font-size:14px;color:var(--muted)}
 
 .row-auto{display:flex;gap:8px;align-items:center;margin-top:6px}
 .row-auto select{flex:1}
-.btn-icon{width:48px;height:48px;padding:0;min-width:48px;margin:0;font-size:20px;background:#1f3321;color:#16a34a}
-.btn-icon:active{background:#16a34a;color:#000}
-.btn-icon.aggiungi{background:#1f3321;color:#22c55e}
-.btn-icon.elimina{background:#3f1a1a;color:#ef4444}
-.btn-icon.elimina:active{background:#ef4444;color:#fff}
+.btn-icon{width:48px;height:48px;padding:0;min-width:48px;margin:0;font-size:20px;background:var(--border);color:var(--accent)}
+.btn-icon:active{background:var(--accent);color:#000}
+.btn-icon.aggiungi{background:var(--border);color:var(--accent2)}
+.btn-icon.elimina{background:#3f1a1a;color:var(--danger)}
+.btn-icon.elimina:active{background:var(--danger);color:#fff}
 
-  #clock{width:240px;height:240px;border:4px solid #16a34a;border-radius:50%;margin:25px auto;position:relative;background:#0a0f0a;touch-action: none;box-shadow:0 0 20px rgba(22,163,74,0.3)}
+  #clock{width:240px;height:240px;border:4px solid var(--accent);border-radius:50%;margin:25px auto;position:relative;background:var(--bg);touch-action: none;box-shadow:0 0 20px rgba(22,163,74,0.3)}
 .hand{position:absolute;bottom:50%;left:50%;transform-origin:bottom;cursor:grab;border-radius:4px}
 .hand:active{cursor:grabbing}
-  #hour{width:6px;height:65px;background:#16a34a;margin-left:-3px;z-index:3}
-  #minute{width:4px;height:90px;background:#e8f5e9;margin-left:-2px;z-index:2}
-  #second{width:2px;height:100px;background:#22c55e;margin-left:-1px;z-index:1}
-.center{width:14px;height:14px;background:#16a34a;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);z-index:4;border:2px solid #0a0f0a}
+  #hour{width:6px;height:65px;background:var(--accent);margin-left:-3px;z-index:3}
+  #minute{width:4px;height:90px;background:var(--text);margin-left:-2px;z-index:2}
+  #second{width:2px;height:100px;background:var(--accent2);margin-left:-1px;z-index:1}
+.center{width:14px;height:14px;background:var(--accent);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);z-index:4;border:2px solid var(--bg)}
 
 /* STILE FOTO NEI SALVATAGGI */
-.foto-salvata{width:100%;border-radius:12px;margin-top:10px;border:2px solid #16a34a}
-.msg-foto{color:#22c55e;font-size:14px;text-align:center;margin-top:8px;font-weight:700}
+.foto-salvata{width:100%;border-radius:12px;margin-top:10px;border:2px solid var(--accent)}
+.msg-foto{color:var(--accent2);font-size:14px;text-align:center;margin-top:8px;font-weight:700}
 </style>
 </head>
 <body>
