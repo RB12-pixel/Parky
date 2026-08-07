@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>PARKY</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16a34a">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:#0a0f0a;color:#e8f5e9;font-family:system-ui, sans-serif;padding-top:60px}
+
+.header{position:fixed;top:0;left:0;width:100%;height:60px;background:#0f1410;border-bottom:2px solid #16a34a;z-index:998;display:flex;align-items:center;padding:0 15px}
+.header h2{color:#16a34a;margin:0 auto;font-weight:800;font-size:22px}
+.openbtn{font-size:26px;cursor:pointer;background:#16a34a;color:#000;padding:6px 12px;border:none;border-radius:10px;font-weight:900}
+
+.sidebar{height:100%;width:0;position:fixed;z-index:1000;top:0;left:0;background:#0f1410;overflow-x:hidden;transition:0.3s;padding-top:60px;border-right:2px solid #16a34a}
+.sidebar a{padding:16px 24px;text-decoration:none;font-size:18px;color:#a7c4a9;display:block;transition:0.2s}
+.sidebar a:hover{color:#16a34a;background:#1a241b}
+.sidebar.closebtn{position:absolute;top:10px;right:20px;font-size:32px;color:#a7c4a9}
+
+.main{padding:20px;max-width:500px;margin:0 auto}
+.card{background:#0f1410;border:2px solid #1f3321;padding:20px;border-radius:16px;margin:20px 0}
+  h3{color:#16a34a;margin-bottom:15px;font-size:20px;text-align:center}
+  button{background:#16a34a;border:0;padding:14px;border-radius:12px;font-weight:800;color:#000;width:100%;margin-top:12px;font-size:16px;cursor:pointer}
+  button:active{transform:scale(0.96);background:#22c55e}
+  button.off{background:#3f1a1a;color:#ef4444}
+  button.caffe{background:#f59e0b;color:#000}
+  input{width:100%;padding:12px;border-radius:12px;border:2px solid #1f3321;background:#0a0f0a;color:#16a34a;margin-top:6px;font-size:16px;text-align:center}
+  label{font-size:14px;color:#a7c4a9}
+
+.row-auto{display:flex;gap:8px;align-items:center;margin-top:6px}
+.row-auto select{flex:1}
+.btn-icon{width:48px;height:48px;padding:0;min-width:48px;margin:0;font-size:20px;background:#1f3321;color:#16a34a}
+.btn-icon:active{background:#16a34a;color:#000}
+.btn-icon.aggiungi{background:#1f3321;color:#22c55e}
+.btn-icon.elimina{background:#3f1a1a;color:#ef4444}
+.btn-icon.elimina:active{background:#ef4444;color:#fff}
+
+  #clock{width:240px;height:240px;border:4px solid #16a34a;border-radius:50%;margin:25px auto;position:relative;background:#0a0f0a;touch-action: none;box-shadow:0 0 20px rgba(22,163,74,0.3)}
+.hand{position:absolute;bottom:50%;left:50%;transform-origin:bottom;cursor:grab;border-radius:4px}
+.hand:active{cursor:grabbing}
+  #hour{width:6px;height:65px;background:#16a34a;margin-left:-3px;z-index:3}
+  #minute{width:4px;height:90px;background:#e8f5e9;margin-left:-2px;z-index:2}
+  #second{width:2px;height:100px;background:#22c55e;margin-left:-1px;z-index:1}
+.center{width:14px;height:14px;background:#16a34a;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);z-index:4;border:2px solid #0a0f0a}
+</style>
+</head>
+<body>
+
+<!-- Bottone fisso in un punto -->
+<a href="https://ko-fi.com/tuonome" target="_blank" class="coffee-btn">
+  ☕ Offrimi un caffè
+</a>
+
+<div class="container">
+
+<div class="header">
+  <button class="openbtn" onclick="openNav()">☰</button>
+  <h2>🚗 PARKY</h2>
+</div>
+
+<div id="mySidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+  <a href="index.html">🏠 Home</a>
+  <a href="salva.html">📍 Salvataggi</a>
+  <a href="impostazioni.html">⚙️ Impostazioni</a>
+</div>
+
+<div class="main">
+  <div class="card">
+    <h3>Disco Orario</h3>
+    <div id="clock">
+      <div class="hand" id="hour" data-hand="hour"></div>
+      <div class="hand" id="minute" data-hand="minute"></div>
+      <div class="hand" id="second"></div>
+      <div class="center"></div>
+    </div>
+    <label>Imposta orario scadenza</label>
+    <input type="time" id="ora">
+    <button id="btnTachi" onclick="avviaTachi()">AVVIA TACHI</button>
+    <p id="countdown" style="text-align:center;font-size:20px;margin-top:15px;font-weight:800;color:#16a34a"></p>
+  </div>
+
+  <div class="card">
+    <h3>Salva Posizione Auto</h3>
+    <label>Seleziona Auto</label>
+    <div class="row-auto">
+      <select id="macchina"></select>
+      <button class="btn-icon aggiungi" onclick="aggiungiAuto()" title="Nuova Auto">➕</button>
+      <button class="btn-icon" onclick="rinominaAuto()" title="Rinomina">✏️</button>
+      <button class="btn-icon elimina" onclick="eliminaAuto()" title="Elimina Auto">🗑️</button>
+    </div>
+
+    <button onclick="salvaPosizione()">📍 SALVA POSIZIONE ATTUALE</button>
+    <button id="btnPortami" onclick="mostraMappa()" style="display:none">🗺️ PORTAMI ALLA MACCHINA</button>
+    <button id="btnFoto" onclick="scattaFoto()" style="display:none">📸 SCATTA FOTO</button>
+    <button class="caffe" onclick="window.open('https://buymeacoffee.com', '_blank')">☕ OFFRIMI UN CAFFÈ</button>
+    <p id="status" style="text-align:center;margin-top:12px;color:#a7c4a9"></p>
+  </div>
+</div>
+
+<script>
+let macchinaAttiva = '';
+let timerTachi = null;
+let dragging = null;
+const clock = document.getElementById('clock');
+const oraInput = document.getElementById('ora');
+
+function S(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function G(k){return JSON.parse(localStorage.getItem(k)||'null')}
+
+function openNav(){document.getElementById("mySidebar").style.width = "260px";}
+function closeNav(){document.getElementById("mySidebar").style.width = "0";}
+
+// GESTIONE AUTO
+function getNomiAuto(){
+  let nomi = G('parky_nomi');
+  if(!nomi){
+    nomi = {auto1: '🚗 Auto 1', auto2: '🚙 Auto 2'};
+    S('parky_nomi', nomi);
+  }
+  return nomi;
+}
+
+function caricaSelectAuto(){
+  let nomi = getNomiAuto();
+  const select = document.getElementById('macchina');
+  select.innerHTML = '';
+  Object.keys(nomi).forEach(id => {
+    select.innerHTML += `<option value="${id}">${nomi[id]}</option>`;
+  });
+  if(!nomi[macchinaAttiva]) macchinaAttiva = Object.keys(nomi)[0];
+  select.value = macchinaAttiva;
+  aggiornaBottoniSalvataggio(); // aggiorna i bottoni quando cambi auto
+}
+
+caricaSelectAuto();
+document.getElementById('macchina').onchange = e => {macchinaAttiva = e.target.value; aggiornaBottoniSalvataggio();};
+
+function aggiungiAuto(){
+  let nomi = getNomiAuto();
+  let nuovoId = 'auto_' + Date.now();
+  let numero = Object.keys(nomi).length + 1;
+  let nuovoNome = prompt(`Nome nuova auto:`, `🚘 Auto ${numero}`);
+  if(nuovoNome && nuovoNome.trim()!== ''){
+    nomi[nuovoId] = nuovoNome.trim();
+    S('parky_nomi', nomi);
+    macchinaAttiva = nuovoId;
+    caricaSelectAuto();
+  }
+}
+
+function rinominaAuto(){
+  let nomi = getNomiAuto();
+  let nuovoNome = prompt(`Rinomina ${nomi[macchinaAttiva]}:`, nomi[macchinaAttiva]);
+  if(nuovoNome && nuovoNome.trim()!== ''){
+    nomi[macchinaAttiva] = nuovoNome.trim();
+    S('parky_nomi', nomi);
+    caricaSelectAuto();
+  }
+}
+
+function eliminaAuto(){
+  let nomi = getNomiAuto();
+  if(Object.keys(nomi).length <= 1) return alert('Devi avere almeno 1 auto!');
+  if(confirm(`Vuoi eliminare "${nomi[macchinaAttiva]}" e la sua posizione?`)){
+    localStorage.removeItem('parky_'+macchinaAttiva);
+    delete nomi[macchinaAttiva];
+    S('parky_nomi', nomi);
+    caricaSelectAuto();
+  }
+}
+
+// MOSTRA/NASCONDI BOTTONI SE C'E' SALVATAGGIO
+function aggiornaBottoniSalvataggio(){
+  let pos = G('parky_'+macchinaAttiva);
+  if(pos){
+    document.getElementById('btnPortami').style.display = 'block';
+    document.getElementById('btnFoto').style.display = 'block';
+  } else {
+    document.getElementById('btnPortami').style.display = 'none';
+    document.getElementById('btnFoto').style.display = 'none';
+  }
+}
+
+// DISCO ORARIO CON SALVATAGGIO
+function aggiornaUI_Tachi(){
+  let fine = G('parky_tachi_fine');
+  if(fine){
+    let diff = fine - new Date().getTime();
+    if(diff <= 0) {
+      clearInterval(timerTachi);
+      S('parky_tachi_fine', null);
+      document.getElementById('countdown').innerText='SCADUTO! 🔔';
+      document.getElementById('btnTachi').innerText='AVVIA TACHI';
+      document.getElementById('btnTachi').className='';
+      return
+    }
+    let min = Math.floor(diff/60000);
+    let sec = Math.floor((diff%60000)/1000);
+    document.getElementById('countdown').innerText=`Mancano: ${min}m ${sec}s`;
+    document.getElementById('btnTachi').innerText='FERMA TACHI';
+    document.getElementById('btnTachi').className='off';
+  }
+}
+
+function avviaTachi(){
+  let fine = G('parky_tachi_fine');
+  if(fine){ // se c'è già, lo ferma
+    clearInterval(timerTachi);
+    S('parky_tachi_fine', null);
+    document.getElementById('countdown').innerText='';
+    document.getElementById('btnTachi').innerText='AVVIA TACHI';
+    document.getElementById('btnTachi').className='';
+    return;
+  }
+
+  let ora = oraInput.value;
+  if(!ora) return alert('Seleziona orario');
+  let [h,m] = ora.split(':');
+  let fineData = new Date(); fineData.setHours(h,m,0);
+  if(fineData < new Date()) fineData.setDate(fineData.getDate() + 1);
+
+  S('parky_tachi_fine', fineData.getTime());
+  timerTachi = setInterval(aggiornaUI_Tachi, 1000);
+  aggiornaUI_Tachi();
+}
+
+// Ripristina tachi all'avvio
+window.onload = () => {
+  if(G('parky_tachi_fine')) timerTachi = setInterval(aggiornaUI_Tachi, 1000);
+  aggiornaUI_Tachi();
+  aggiornaBottoniSalvataggio();
+}
+
+// DRAG LANCETTE
+oraInput.addEventListener('change', impostaLancetteDaInput);
+function impostaLancetteDaInput(){
+  let ora = oraInput.value; if(!ora) return;
+  let [h,m] = ora.split(':').map(Number);
+  document.getElementById('hour').style.transform = `rotate(${(h % 12) * 30 + m * 0.5}deg)`;
+  document.getElementById('minute').style.transform = `rotate(${m * 6}deg)`;
+}
+clock.addEventListener('mousedown', startDrag); clock.addEventListener('touchstart', startDrag);
+document.addEventListener('mousemove', drag); document.addEventListener('touchmove', drag);
+document.addEventListener('mouseup', stopDrag); document.addEventListener('touchend', stopDrag);
+function getAngle(x, y){const rect = clock.getBoundingClientRect(); const cx = rect.left + rect.width / 2; const cy = rect.top + rect.height / 2; let angle = Math.atan2(x - cx, cy - y) * (180 / Math.PI); if(angle < 0) angle += 360; return angle;}
+function startDrag(e){let target = e.target.closest('.hand'); if(!target || target.id === 'second') return; dragging = target.id; e.preventDefault();}
+function drag(e){if(!dragging) return; e.preventDefault(); let touch = e.touches? e.touches[0] : e; document.getElementById(dragging).style.transform = `rotate(${getAngle(touch.clientX, touch.clientY)}deg)`; aggiornaInputDaLancette();}
+function stopDrag(){dragging = null;}
+function aggiornaInputDaLancette(){let hDeg = parseFloat(document.getElementById('hour').style.transform.match(/rotate\((.*)deg/)[1]); let mDeg = parseFloat(document.getElementById('minute').style.transform.match(/rotate\((.*)deg/)[1]); let ore = Math.floor(hDeg / 30) % 12; let minuti = Math.round(mDeg / 6) % 60; oraInput.value = String(ore).padStart(2,'0') + ':' + String(minuti).padStart(2,'0');}
+
+// GPS + FOTO
+function salvaPosizione(){
+  document.getElementById('status').innerText='Ricerca GPS...';
+  navigator.geolocation.getCurrentPosition(
+    (p) => {
+      let nota = prompt("Vuoi aggiungere una nota? es: 'Parcheggio Blu - Piano -2'");
+      if(nota === null) nota = "";
+      let data = {lat:p.coords.latitude, lon:p.coords.longitude, data:new Date().toLocaleString(), nota: nota, foto: G('parky_foto_'+macchinaAttiva) || null}
+      S('parky_'+macchinaAttiva, data);
+      document.getElementById('status').innerText=`✅ Salvato alle ${new Date().toLocaleTimeString()}`;
+      aggiornaBottoniSalvataggio();
+    },
+    () => {document.getElementById('status').innerText='❌ Errore GPS. Attiva posizione'},
+    {enableHighAccuracy: true, timeout: 15000}
+  )
+}
+
+function mostraMappa(){
+  let pos = G('parky_'+macchinaAttiva);
+  if(!pos) return alert('Salva prima una posizione');
+  window.open(`https://www.google.com/maps?q=${pos.lat},${pos.lon}`, '_blank');
+}
+
+function scattaFoto(){
+  let input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.capture = 'environment';
+  input.onchange = e => {
+    let file = e.target.files[0];
+    let reader = new FileReader();
+    reader.onload = () => {
+      S('parky_foto_'+macchinaAttiva, reader.result);
+      let data = G('parky_'+macchinaAttiva);
+      data.foto = reader.result;
+      S('parky_'+macchinaAttiva, data);
+      alert('Foto salvata! 📸');
+    }
+    reader.readAsDataURL(file);
+  }
+  input.click();
+}
+
+</script>
+
+<script>
+// Registra Service Worker per installazione PC
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js');
+}
+
+</script>
+</body>
+</html>
