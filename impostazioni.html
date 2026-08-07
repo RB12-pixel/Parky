@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PARKY - Impostazioni</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16a34a">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0f0a;color:#e8f5e9;font-family:system-ui, sans-serif;padding-top:60px}
+  .header{position:fixed;top:0;left:0;width:100%;height:60px;background:#0f1410;border-bottom:2px solid #16a34a;z-index:998;display:flex;align-items:center;padding:0 15px}
+  .header h2{color:#16a34a;margin:0 auto;font-weight:800;font-size:22px}
+  .openbtn{font-size:26px;cursor:pointer;background:#16a34a;color:#000;padding:6px 12px;border:none;border-radius:10px;font-weight:900}
+  .sidebar{height:100%;width:0;position:fixed;z-index:1000;top:0;left:0;background:#0f1410;overflow-x:hidden;transition:0.3s;padding-top:60px;border-right:2px solid #16a34a}
+  .sidebar a{padding:16px 24px;text-decoration:none;font-size:18px;color:#a7c4a9;display:block}
+  .sidebar a:hover{color:#16a34a;background:#1a241b}
+  .sidebar .closebtn{position:absolute;top:10px;right:20px;font-size:32px;color:#a7c4a9}
+  .main{padding:20px;text-align:center}
+</style>
+</head>
+<body>
+<div class="header">
+  <button class="openbtn" onclick="openNav()">☰</button>
+  <h2>⚙️ IMPOSTAZIONI</h2>
+</div>
+<div id="mySidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+  <a href="index.html">🏠 Home</a>
+  <a href="salva.html">📍 Salvataggi</a>
+  <a href="impostazioni.html">⚙️ Impostazioni</a>
+</div>
+<div class="main">
+  <h1>Prossimamente...</h1>
+</div>
+<script>
+function openNav(){document.getElementById("mySidebar").style.width = "260px";}
+function closeNav(){document.getElementById("mySidebar").style.width = "0";}
+</script>
+</body>
+</html>
