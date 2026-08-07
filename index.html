@@ -254,7 +254,13 @@ window.onload = () => {
   aggiornaUI_Tachi();
   aggiornaBottoniSalvataggio();
 }
-
+// TEMA CHIARO/SCURO
+function applicaTema(){
+  let tema = localStorage.getItem('parky_tema') || 'dark';
+  if(tema === 'light') document.body.classList.add('light');
+  else document.body.classList.remove('light');
+}
+applicaTema();
 // DRAG LANCETTE
 oraInput.addEventListener('change', impostaLancetteDaInput);
 function impostaLancetteDaInput(){
