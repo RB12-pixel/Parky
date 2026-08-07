@@ -121,16 +121,85 @@ function applicaTema(){let tema = localStorage.getItem('parky_tema') || 'dark';i
 applicaTema();
 
 function getNomiAuto(){let nomi = G('parky_nomi');if(!nomi){nomi = {auto1: '🚗 Auto 1'};S('parky_nomi', nomi);}return nomi;}
+
 function caricaSelectAuto(){let nomi = getNomiAuto();const select = document.getElementById('macchina');select.innerHTML = '';Object.keys(nomi).forEach(id => {select.innerHTML += `<option value="${id}">${nomi[id]}</option>`;});if(!nomi[macchinaAttiva]) macchinaAttiva = Object.keys(nomi)[0];select.value = macchinaAttiva;aggiornaBottoniSalvataggio();}
 caricaSelectAuto();document.getElementById('macchina').onchange = e => {macchinaAttiva = e.target.value; aggiornaBottoniSalvataggio();};
+
 function aggiungiAuto(){let nomi = getNomiAuto();let nuovoId = 'auto_' + Date.now();let numero = Object.keys(nomi).length + 1;let nuovoNome = prompt(`Nome nuova auto:`, `🚘 Auto ${numero}`);if(nuovoNome && nuovoNome.trim()!== ''){nomi[nuovoId] = nuovoNome.trim();S('parky_nomi', nomi);macchinaAttiva = nuovoId;caricaSelectAuto();}}
+
 function rinominaAuto(){let nomi = getNomiAuto();let nuovoNome = prompt(`Rinomina ${nomi[macchinaAttiva]}:`, nomi[macchinaAttiva]);if(nuovoNome && nuovoNome.trim()!== ''){nomi[macchinaAttiva] = nuovoNome.trim();S('parky_nomi', nomi);caricaSelectAuto();}}
+
 function eliminaAuto(){let nomi = getNomiAuto();if(Object.keys(nomi).length <= 1) return alert('Devi avere almeno 1 auto!');if(confirm(`Vuoi eliminare "${nomi[macchinaAttiva]}" e la sua posizione?`)){localStorage.removeItem('parky_'+macchinaAttiva);localStorage.removeItem('parky_foto_'+macchinaAttiva);delete nomi[macchinaAttiva];S('parky_nomi', nomi);caricaSelectAuto();}}
+
 function aggiornaBottoniSalvataggio(){let pos = G('parky_'+macchinaAttiva);if(pos){document.getElementById('btnPortami').style.display = 'block';document.getElementById('btnFoto').style.display = 'block';} else {document.getElementById('btnPortami').style.display = 'none';document.getElementById('btnFoto').style.display = 'none';}}
 
 function aggiornaUI_Tachi(){let fine = G('parky_tachi_fine');if(fine){let diff = fine - new Date().getTime();if(diff <= 0) {clearInterval(timerTachi);S('parky_tachi_fine', null);document.getElementById('countdown').innerText='SCADUTO! 🔔';document.getElementById('btnTachi').innerText='AVVIA TACHI';document.getElementById('btnTachi').className='';return}let min = Math.floor(diff/60000);let sec = Math.floor((diff%60000)/1000);document.getElementById('countdown').innerText=`Mancano: ${min}m ${sec}s`;document.getElementById('btnTachi').innerText='FERMA TACHI';document.getElementById('btnTachi').className='off';}}
-function avviaTachi(){let fine = G('parky_tachi_fine');if(fine){clearInterval(timerTachi);S('parky_tachi_fine', null);document.getElementById('countdown').innerText='';document.getElementById('btnTachi').innerText='AVVIA TACHI';document.getElementById('btnTachi').className='';return;}let ora = oraInput.value;if(!ora) return alert('Seleziona orario');let [h,m] = ora.split(':');let fineData = new Date(); fineData.setHours(h,m,0);if(fineData < new Date()) fineData.setDate(fineData.getDate() + 1);S('parky_tachi_fine', fineData.getTime());timerTachi = setInterval(aggiornaUI_Tachi, 1000);aggiornaUI_Tachi();}
-window.onload = () => {if(G('parky_tachi_fine')) timerTachi = setInterval(aggiornaUI_Tachi, 1000);aggiornaUI_Tachi();aggiornaBottoniSalvataggio();}
+
+function avviaTachi(){
+  let fine = G('parky_tachi_fine');
+  if(fine){
+    clearInterval(timerTachi);
+    S('parky_tachi_fine', null);
+    document.getElementById('countdown').innerText='';
+    document.getElementById('btnTachi').innerText='AVVIA TACHI';
+    document.getElementById('btnTachi').className='';
+    return;
+  }
+
+  let ora = oraInput.value;
+  if(!ora) return alert('Seleziona orario');
+  let [h,m] = ora.split(':');
+  let fineData = new Date(); fineData.setHours(h,m,0);
+  if(fineData < new Date()) fineData.setDate(fineData.getDate() + 1);
+
+  S('parky_tachi_fine', fineData.getTime());
+  
+  programmaNotifica(fineData.getTime()); // <-- AGGIUNGI SOLO QUESTA
+  
+  timerTachi = setInterval(aggiornaUI_Tachi, 1000);
+  aggiornaUI_Tachi();
+}
+// CHIEDE IL PERMESSO QUANDO APRI L'APP
+async function chiediPermessoNotifiche(){
+  if('Notification' in window && Notification.permission === 'default'){
+    await Notification.requestPermission();
+  }
+}
+chiediPermessoNotifiche();
+
+// PROGRAMMA LE NOTIFICHE
+function programmaNotifica(fineTimestamp){
+  if(!('serviceWorker' in navigator)) return;
+  
+  let diff = fineTimestamp - Date.now();
+  if(diff <= 0) return;
+
+  // NOTIFICA 5 MIN PRIMA
+  let diffPreavviso = diff - (5 * 60 * 1000);
+  if(diffPreavviso > 0){
+    setTimeout(() => {
+      navigator.serviceWorker.ready.then(reg => {
+        reg.showNotification('⚠️ PARKY - Mancano 5 minuti', {
+          body: 'Il disco scade tra poco. Preparati!',
+          icon: './manifest.json',
+          vibrate: [100, 50, 100]
+        });
+      });
+    }, diffPreavviso);
+  }
+
+  // NOTIFICA QUANDO SCADE
+  setTimeout(() => {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification('🚗 PARKY - TACHI SCADUTO!', {
+        body: 'Sposta l\'auto prima della multa! 🔔',
+        icon: './manifest.json',
+        vibrate: [200, 100, 200, 100, 200],
+        requireInteraction: true
+      });
+    });
+  }, diff);
+}
 
 function testNotifica(){
   if(Notification.permission !== 'granted'){
