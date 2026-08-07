@@ -52,6 +52,9 @@ function caricaSalvataggi(){
   lista.innerHTML = '';
   let trovato = false;
   let nomi = G('parky_nomi') || {};
+ if(pos.foto){
+  html += `<img src="${pos.foto}" class="foto-salvata">`;
+ }
 
   Object.keys(nomi).forEach(id => {
     let pos = G('parky_'+id);
