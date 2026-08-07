@@ -7,7 +7,6 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16a34a">
 <style>
-  /* TEMA CON VARIABILI */
   :root{
     --bg:#0a0f0a; --card:#131a14; --border:#1f3321; --text:#e8f5e9;
     --muted:#a7c4a9; --accent:#16a34a; --danger:#dc2626;
@@ -16,7 +15,6 @@
     --bg:#f5f5f5; --card:#ffffff; --border:#d1d5db; --text:#1f2937;
     --muted:#6b7280; --accent:#16a34a; --danger:#dc2626;
   }
-
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg);color:var(--text);font-family:system-ui, sans-serif;padding-top:60px;transition:0.3s}
  .header{position:fixed;top:0;left:0;width:100%;height:60px;background:var(--card);border-bottom:2px solid var(--accent);z-index:998;display:flex;align-items:center;padding:0 15px}
@@ -33,7 +31,7 @@
  .salvataggio{border:2px solid var(--border);background:var(--card);padding:15px;border-radius:12px;margin-bottom:15px}
  .salvataggio h3{color:var(--accent);margin-bottom:8px;font-size:18px}
  .salvataggio p{color:var(--muted);font-size:14px;margin:4px 0}
- .salvataggio img{width:100%;border-radius:10px;margin-top:10px;border:2px solid var(--border)} /* FOTO */
+ .salvataggio img{width:100%;border-radius:10px;margin-top:10px;border:2px solid var(--border)}
  .vuoto{text-align:center;color:var(--muted);padding:40px 20px;font-size:16px}
 </style>
 </head>
@@ -57,13 +55,9 @@ function G(k){return JSON.parse(localStorage.getItem(k)||'null')}
 function openNav(){document.getElementById("mySidebar").style.width = "260px";}
 function closeNav(){document.getElementById("mySidebar").style.width = "0";}
 
-// TEMA: applica quello salvato in impostazioni
-function applicaTema(){
-  let tema = localStorage.getItem('parky_tema') || 'dark';
-  if(tema === 'light') document.body.classList.add('light');
-  else document.body.classList.remove('light');
-}
-applicaTema(); // lo applica all'avvio
+// TEMA
+function applicaTema(){let tema = localStorage.getItem('parky_tema') || 'dark';if(tema === 'light') document.body.classList.add('light');}
+applicaTema();
 
 function caricaSalvataggi(){
   const lista = document.getElementById('lista');
@@ -71,19 +65,22 @@ function caricaSalvataggi(){
   let trovato = false;
   let nomi = G('parky_nomi') || {};
 
+  // CICLA TUTTE LE AUTO SALVATE
   Object.keys(nomi).forEach(id => {
-    let pos = G('parky_'+id);
-    if(pos){
+    let pos = G('parky_'+id); // LEGGE parky_auto1 ecc
+    
+    // CONTROLLO IMPORTANTE: deve avere lat e lon
+    if(pos && pos.lat && pos.lon){
       trovato = true;
-      let fotoHTML = pos.foto? `<img src="${pos.foto}" alt="Foto parcheggio">` : ''; /* AGGIUNTA FOTO */
-      let notaHTML = pos.nota? `<p><b>📝 Nota:</b> ${pos.nota}</p>` : '';
+      let fotoHTML = pos.foto ? `<img src="${pos.foto}" alt="Foto parcheggio">` : '';
+      let notaHTML = pos.nota ? `<p><b>📝 Nota:</b> ${pos.nota}</p>` : '';
 
       lista.innerHTML += `
         <div class="salvataggio">
           <h3>${nomi[id]}</h3>
           <p><b>📅 Data:</b> ${pos.data}</p>
           ${notaHTML}
-          ${fotoHTML} /* QUI ESCE LA FOTO */
+          ${fotoHTML}
           <p><b>📍 Lat:</b> ${pos.lat.toFixed(5)}</p>
           <p><b>📍 Lon:</b> ${pos.lon.toFixed(5)}</p>
           <button onclick="vai(${pos.lat},${pos.lon})">🗺️ PORTAMI ALLA MACCHINA</button>
@@ -92,11 +89,17 @@ function caricaSalvataggi(){
       `;
     }
   });
-  if(!trovato) lista.innerHTML = `<div class="vuoto">Nessun salvataggio ancora 😅</div>`;
+  
+  if(!trovato) lista.innerHTML = `<div class="vuoto">Nessun salvataggio ancora 😅<br><br>Vai in Home > SALVA POSIZIONE</div>`;
 }
 
 function vai(lat, lon){ window.open(`https://www.google.com/maps?q=${lat},${lon}`, '_blank'); }
-function elimina(id){ if(confirm('Eliminare salvataggio?')){ localStorage.removeItem('parky_'+id); caricaSalvataggi(); } }
+function elimina(id){ 
+  if(confirm('Eliminare salvataggio?')){ 
+    localStorage.removeItem('parky_'+id); 
+    caricaSalvataggi(); 
+  } 
+}
 caricaSalvataggi();
 </script>
 </body>
