@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PARKY - Salvataggi</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16a34a">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0f0a;color:#e8f5e9;font-family:system-ui, sans-serif;padding-top:60px}
+ .header{position:fixed;top:0;left:0;width:100%;height:60px;background:#0f1410;border-bottom:2px solid #16a34a;z-index:998;display:flex;align-items:center;padding:0 15px}
+ .header h2{color:#16a34a;margin:0 auto;font-weight:800;font-size:22px}
+ .openbtn{font-size:26px;cursor:pointer;background:#16a34a;color:#000;padding:6px 12px;border:none;border-radius:10px;font-weight:900}
+ .sidebar{height:100%;width:0;position:fixed;z-index:1000;top:0;left:0;background:#0f1410;overflow-x:hidden;transition:0.3s;padding-top:60px;border-right:2px solid #16a34a}
+ .sidebar a{padding:16px 24px;text-decoration:none;font-size:18px;color:#a7c4a9;display:block}
+ .sidebar a:hover{color:#16a34a;background:#1a241b}
+ .sidebar.closebtn{position:absolute;top:10px;right:20px;font-size:32px;color:#a7c4a9}
+ .main{padding:20px;max-width:500px;margin:0 auto}
+  h1{text-align:center;color:#16a34a;margin-bottom:20px;font-weight:800;font-size:24px}
+  button{background:#16a34a;border:0;padding:12px;border-radius:12px;font-weight:800;color:#000;width:100%;margin-top:10px;font-size:15px;cursor:pointer}
+  button.elimina{background:#dc2626;color:#fff}
+ .salvataggio{border:2px solid #1f3321;background:#131a14;padding:15px;border-radius:12px;margin-bottom:15px}
+ .salvataggio h3{color:#16a34a;margin-bottom:8px;font-size:18px}
+ .salvataggio p{color:#a7c4a9;font-size:14px;margin:4px 0}
+ .salvataggio img{width:100%;border-radius:10px;margin-top:10px;border:2px solid #1f3321}
+ .vuoto{text-align:center;color:#a7c4a9;padding:40px 20px;font-size:16px}
+</style>
+</head>
+<body>
+<div class="header">
+  <button class="openbtn" onclick="openNav()">☰</button>
+  <h2>📍 SALVATAGGI</h2>
+</div>
+<div id="mySidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+  <a href="index.html">🏠 Home</a>
+  <a href="salva.html">📍 Salvataggi</a>
+  <a href="impostazioni.html">⚙️ Impostazioni</a>
+</div>
+<div class="main">
+  <h1>I Tuoi Salvataggi</h1>
+  <div id="lista"></div>
+</div>
+<script>
+function G(k){return JSON.parse(localStorage.getItem(k)||'null')}
+function openNav(){document.getElementById("mySidebar").style.width = "260px";}
+function closeNav(){document.getElementById("mySidebar").style.width = "0";}
+
+function caricaSalvataggi(){
+  const lista = document.getElementById('lista');
+  lista.innerHTML = '';
+  let trovato = false;
+  let nomi = G('parky_nomi') || {};
+
+  Object.keys(nomi).forEach(id => {
+    let pos = G('parky_'+id);
+    if(pos){
+      trovato = true;
+      let fotoHTML = pos.foto? `<img src="${pos.foto}" alt="Foto parcheggio">` : '';
+      let notaHTML = pos.nota? `<p><b>📝 Nota:</b> ${pos.nota}</p>` : '';
+
+      lista.innerHTML += `
+        <div class="salvataggio">
+          <h3>${nomi[id]}</h3>
+          <p><b>📅 Data:</b> ${pos.data}</p>
+          ${notaHTML}
+          ${fotoHTML}
+          <p><b>📍 Lat:</b> ${pos.lat.toFixed(5)}</p>
+          <p><b>📍 Lon:</b> ${pos.lon.toFixed(5)}</p>
+          <button onclick="vai(${pos.lat},${pos.lon})">🗺️ PORTAMI ALLA MACCHINA</button>
+          <button class="elimina" onclick="elimina('${id}')">🗑️ ELIMINA SALVATAGGIO</button>
+        </div>
+      `;
+    }
+  });
+  if(!trovato) lista.innerHTML = `<div class="vuoto">Nessun salvataggio ancora 😅</div>`;
+}
+
+function vai(lat, lon){ window.open(`https://www.google.com/maps?q=${lat},${lon}`, '_blank'); }
+function elimina(id){ if(confirm('Eliminare salvataggio?')){ localStorage.removeItem('parky_'+id); caricaSalvataggi(); } }
+caricaSalvataggi();
+</script>
+</body>
+</html>
