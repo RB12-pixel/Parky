@@ -261,6 +261,12 @@ function salvaPosizione(){
 function mostraMappa(){let pos = G('parky_'+macchinaAttiva);if(!pos) return alert('Salva prima una posizione');window.open(`https://www.google.com/maps?q=${pos.lat},${pos.lon}`, '_blank');}
 function scattaFoto(){let input = document.createElement('input');input.type = 'file';input.accept = 'image/*';input.capture = 'environment';input.onchange = e => {let file = e.target.files[0];let reader = new FileReader();reader.onload = () => {S('parky_foto_'+macchinaAttiva, reader.result);let data = G('parky_'+macchinaAttiva);if(data){ data.foto = reader.result; S('parky_'+macchinaAttiva, data); }document.getElementById('msgFoto').style.display='block';setTimeout(()=>{document.getElementById('msgFoto').style.display='none'}, 4000)};reader.readAsDataURL(file)};input.click();}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
+
+// AVVIA IL COUNTDOWN SE ESISTE GIA' UN TACHI SALVATO
+if(G('parky_tachi_fine')){
+  timerTachi = setInterval(aggiornaUI_Tachi, 1000);
+  aggiornaUI_Tachi();
+}
 </script>
 </body>
 </html>
