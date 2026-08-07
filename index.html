@@ -133,7 +133,32 @@ function eliminaAuto(){let nomi = getNomiAuto();if(Object.keys(nomi).length <= 1
 
 function aggiornaBottoniSalvataggio(){let pos = G('parky_'+macchinaAttiva);if(pos){document.getElementById('btnPortami').style.display = 'block';document.getElementById('btnFoto').style.display = 'block';} else {document.getElementById('btnPortami').style.display = 'none';document.getElementById('btnFoto').style.display = 'none';}}
 
-function aggiornaUI_Tachi(){let fine = G('parky_tachi_fine');if(fine){let diff = fine - new Date().getTime();if(diff <= 0) {clearInterval(timerTachi);S('parky_tachi_fine', null);document.getElementById('countdown').innerText='SCADUTO! 🔔';document.getElementById('btnTachi').innerText='AVVIA TACHI';document.getElementById('btnTachi').className='';return}let min = Math.floor(diff/60000);let sec = Math.floor((diff%60000)/1000);document.getElementById('countdown').innerText=`Mancano: ${min}m ${sec}s`;document.getElementById('btnTachi').innerText='FERMA TACHI';document.getElementById('btnTachi').className='off';}}
+function aggiornaUI_Tachi(){
+  let fine = G('parky_tachi_fine');
+  if(!fine){
+    document.getElementById('countdown').innerText='';
+    document.getElementById('btnTachi').innerText='AVVIA TACHI';
+    document.getElementById('btnTachi').className='';
+    clearInterval(timerTachi);
+    return;
+  }
+  
+  let diff = fine - new Date().getTime();
+  if(diff <= 0) {
+    clearInterval(timerTachi);
+    S('parky_tachi_fine', null);
+    document.getElementById('countdown').innerText='SCADUTO! 🔔';
+    document.getElementById('btnTachi').innerText='AVVIA TACHI';
+    document.getElementById('btnTachi').className='';
+    return;
+  }
+  
+  let min = Math.floor(diff/60000);
+  let sec = Math.floor((diff%60000)/1000);
+  document.getElementById('countdown').innerText=`Mancano: ${min}m ${sec}s`;
+  document.getElementById('btnTachi').innerText='FERMA TACHI';
+  document.getElementById('btnTachi').className='off';
+}
 
 function avviaTachi(){
   let fine = G('parky_tachi_fine');
