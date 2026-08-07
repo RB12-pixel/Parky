@@ -53,6 +53,10 @@
   #minute{width:4px;height:90px;background:#e8f5e9;margin-left:-2px;z-index:2}
   #second{width:2px;height:100px;background:#22c55e;margin-left:-1px;z-index:1}
 .center{width:14px;height:14px;background:#16a34a;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);z-index:4;border:2px solid #0a0f0a}
+
+/* STILE FOTO NEI SALVATAGGI */
+.foto-salvata{width:100%;border-radius:12px;margin-top:10px;border:2px solid #16a34a}
+.msg-foto{color:#22c55e;font-size:14px;text-align:center;margin-top:8px;font-weight:700}
 </style>
 </head>
 <body>
@@ -102,6 +106,7 @@
     <button onclick="salvaPosizione()">📍 SALVA POSIZIONE</button>
     <button id="btnPortami" onclick="mostraMappa()" style="display:none">🗺️ PORTAMI ALLA MACCHINA</button>
     <button id="btnFoto" onclick="scattaFoto()" style="display:none">📸 SCATTA FOTO</button>
+    <p id="msgFoto" class="msg-foto" style="display:none">Puoi vedere la tua foto nei salvataggi!</p>
     <p id="status" style="text-align:center;margin-top:12px;color:#a7c4a9"></p>
   </div>
 </div>
@@ -172,6 +177,7 @@ function eliminaAuto(){
   if(Object.keys(nomi).length <= 1) return alert('Devi avere almeno 1 auto!');
   if(confirm(`Vuoi eliminare "${nomi[macchinaAttiva]}" e la sua posizione?`)){
     localStorage.removeItem('parky_'+macchinaAttiva);
+    localStorage.removeItem('parky_foto_'+macchinaAttiva);
     delete nomi[macchinaAttiva];
     S('parky_nomi', nomi);
     caricaSelectAuto();
@@ -260,6 +266,7 @@ function aggiornaInputDaLancette(){let hDeg = parseFloat(document.getElementById
 // GPS + FOTO
 function salvaPosizione(){
   document.getElementById('status').innerText='Ricerca GPS...';
+  document.getElementById('msgFoto').style.display='none';
   navigator.geolocation.getCurrentPosition(
     (p) => {
       let nota = prompt("Vuoi aggiungere una nota? es: 'Parcheggio Blu - Piano -2'");
@@ -291,9 +298,9 @@ function scattaFoto(){
     reader.onload = () => {
       S('parky_foto_'+macchinaAttiva, reader.result);
       let data = G('parky_'+macchinaAttiva);
-      data.foto = reader.result;
-      S('parky_'+macchinaAttiva, data);
-      alert('Foto salvata! 📸');
+      if(data){ data.foto = reader.result; S('parky_'+macchinaAttiva, data); }
+      document.getElementById('msgFoto').style.display='block'; // MOSTRA MESSAGGIO
+      setTimeout(()=>{document.getElementById('msgFoto').style.display='none'}, 4000); // sparisce dopo 4s
     }
     reader.readAsDataURL(file);
   }
@@ -309,4 +316,4 @@ if('serviceWorker' in navigator){
 }
 </script>
 </body>
-</html>
+ </html>
