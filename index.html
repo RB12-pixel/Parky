@@ -132,6 +132,20 @@ function aggiornaUI_Tachi(){let fine = G('parky_tachi_fine');if(fine){let diff =
 function avviaTachi(){let fine = G('parky_tachi_fine');if(fine){clearInterval(timerTachi);S('parky_tachi_fine', null);document.getElementById('countdown').innerText='';document.getElementById('btnTachi').innerText='AVVIA TACHI';document.getElementById('btnTachi').className='';return;}let ora = oraInput.value;if(!ora) return alert('Seleziona orario');let [h,m] = ora.split(':');let fineData = new Date(); fineData.setHours(h,m,0);if(fineData < new Date()) fineData.setDate(fineData.getDate() + 1);S('parky_tachi_fine', fineData.getTime());timerTachi = setInterval(aggiornaUI_Tachi, 1000);aggiornaUI_Tachi();}
 window.onload = () => {if(G('parky_tachi_fine')) timerTachi = setInterval(aggiornaUI_Tachi, 1000);aggiornaUI_Tachi();aggiornaBottoniSalvataggio();}
 
+function testNotifica(){
+  if(Notification.permission !== 'granted'){
+    alert('Prima dai il permesso notifiche!');
+    return;
+  }
+  navigator.serviceWorker.ready.then(reg => {
+    reg.showNotification('🔥 TEST PARKY', {
+      body: 'Se vedi questa, le notifiche funzionano',
+      icon: './manifest.json',
+      vibrate: [200, 100, 200]
+    });
+  });
+}
+
 oraInput.addEventListener('change', impostaLancetteDaInput);
 function impostaLancetteDaInput(){let ora = oraInput.value; if(!ora) return;let [h,m] = ora.split(':').map(Number);document.getElementById('hour').style.transform = `rotate(${(h % 12) * 30 + m * 0.5}deg)`;document.getElementById('minute').style.transform = `rotate(${m * 6}deg)`;}
 clock.addEventListener('mousedown', startDrag); clock.addEventListener('touchstart', startDrag);
