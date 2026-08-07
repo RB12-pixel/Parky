@@ -192,34 +192,39 @@ async function chiediPermessoNotifiche(){
 }
 chiediPermessoNotifiche();
 
-async function programmaNotifica(fineTimestamp){
+function programmaNotifica(fineTimestamp){
   if(!('serviceWorker' in navigator)) return;
-  let reg = await navigator.serviceWorker.ready;
   
-  // Pulisci vecchie notifiche
-  await reg.getNotifications().then(notifs => {
-    notifs.forEach(n => n.close())
-  });
+  let diff = fineTimestamp - Date.now();
+  if(diff <= 0) return;
 
   // NOTIFICA 5 MIN PRIMA
-  let preavviso = fineTimestamp - (5 * 60 * 1000);
-  if(preavviso > Date.now()){
-    await reg.showTriggeredNotification('⚠️ PARKY - Mancano 5 minuti', {
-      body: 'Il disco scade tra poco. Preparati!',
-      icon: './icon-192.png',
-      tag: 'parky-preavviso',
-      showTrigger: new TimestampTrigger(preavviso)
-    });
+  let diffPreavviso = diff - (5 * 60 * 1000);
+  if(diffPreavviso > 0){
+    setTimeout(() => {
+      navigator.serviceWorker.ready.then(reg => {
+        reg.showNotification('⚠️ PARKY - Mancano 5 minuti', {
+          body: 'Il disco scade tra poco. Preparati!',
+          icon: './icon-192.png',
+          tag: 'parky-preavviso',
+          vibrate: [100, 50, 100]
+        });
+      });
+    }, diffPreavviso);
   }
 
   // NOTIFICA SCADENZA
-  await reg.showTriggeredNotification('🚗 PARKY - TACHI SCADUTO!', {
-    body: 'Sposta l\'auto prima della multa! 🔔',
-    icon: './icon-192.png',
-    tag: 'parky-scadenza',
-    requireInteraction: true,
-    showTrigger: new TimestampTrigger(fineTimestamp)
-  });
+  setTimeout(() => {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification('🚗 PARKY - TACHI SCADUTO!', {
+        body: 'Sposta l\'auto prima della multa! 🔔',
+        icon: './icon-192.png',
+        tag: 'parky-scadenza',
+        requireInteraction: true,
+        vibrate: [200, 100, 200, 100, 200]
+      });
+    });
+  }, diff);
 }
 
 function testNotifica(){
