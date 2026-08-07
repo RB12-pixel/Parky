@@ -1,6 +1,6 @@
 {
-  "name": "PARKY",
-  "short_name": "PARKY",
+  "name": "Parky",
+  "short_name": "Parky",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0a0f0a",
