@@ -7,24 +7,34 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16a34a">
 <style>
+  /* TEMA CON VARIABILI */
+  :root{
+    --bg:#0a0f0a; --card:#131a14; --border:#1f3321; --text:#e8f5e9;
+    --muted:#a7c4a9; --accent:#16a34a; --danger:#dc2626;
+  }
+  body.light{
+    --bg:#f5f5f5; --card:#ffffff; --border:#d1d5db; --text:#1f2937;
+    --muted:#6b7280; --accent:#16a34a; --danger:#dc2626;
+  }
+
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#0a0f0a;color:#e8f5e9;font-family:system-ui, sans-serif;padding-top:60px}
- .header{position:fixed;top:0;left:0;width:100%;height:60px;background:#0f1410;border-bottom:2px solid #16a34a;z-index:998;display:flex;align-items:center;padding:0 15px}
- .header h2{color:#16a34a;margin:0 auto;font-weight:800;font-size:22px}
- .openbtn{font-size:26px;cursor:pointer;background:#16a34a;color:#000;padding:6px 12px;border:none;border-radius:10px;font-weight:900}
- .sidebar{height:100%;width:0;position:fixed;z-index:1000;top:0;left:0;background:#0f1410;overflow-x:hidden;transition:0.3s;padding-top:60px;border-right:2px solid #16a34a}
- .sidebar a{padding:16px 24px;text-decoration:none;font-size:18px;color:#a7c4a9;display:block}
- .sidebar a:hover{color:#16a34a;background:#1a241b}
- .sidebar.closebtn{position:absolute;top:10px;right:20px;font-size:32px;color:#a7c4a9}
+  body{background:var(--bg);color:var(--text);font-family:system-ui, sans-serif;padding-top:60px;transition:0.3s}
+ .header{position:fixed;top:0;left:0;width:100%;height:60px;background:var(--card);border-bottom:2px solid var(--accent);z-index:998;display:flex;align-items:center;padding:0 15px}
+ .header h2{color:var(--accent);margin:0 auto;font-weight:800;font-size:22px}
+ .openbtn{font-size:26px;cursor:pointer;background:var(--accent);color:#000;padding:6px 12px;border:none;border-radius:10px;font-weight:900}
+ .sidebar{height:100%;width:0;position:fixed;z-index:1000;top:0;left:0;background:var(--card);overflow-x:hidden;transition:0.3s;padding-top:60px;border-right:2px solid var(--accent)}
+ .sidebar a{padding:16px 24px;text-decoration:none;font-size:18px;color:var(--muted);display:block}
+ .sidebar a:hover{color:var(--accent);background:var(--border)}
+ .sidebar.closebtn{position:absolute;top:10px;right:20px;font-size:32px;color:var(--muted)}
  .main{padding:20px;max-width:500px;margin:0 auto}
-  h1{text-align:center;color:#16a34a;margin-bottom:20px;font-weight:800;font-size:24px}
-  button{background:#16a34a;border:0;padding:12px;border-radius:12px;font-weight:800;color:#000;width:100%;margin-top:10px;font-size:15px;cursor:pointer}
-  button.elimina{background:#dc2626;color:#fff}
- .salvataggio{border:2px solid #1f3321;background:#131a14;padding:15px;border-radius:12px;margin-bottom:15px}
- .salvataggio h3{color:#16a34a;margin-bottom:8px;font-size:18px}
- .salvataggio p{color:#a7c4a9;font-size:14px;margin:4px 0}
- .salvataggio img{width:100%;border-radius:10px;margin-top:10px;border:2px solid #1f3321}
- .vuoto{text-align:center;color:#a7c4a9;padding:40px 20px;font-size:16px}
+  h1{text-align:center;color:var(--accent);margin-bottom:20px;font-weight:800;font-size:24px}
+  button{background:var(--accent);border:0;padding:12px;border-radius:12px;font-weight:800;color:#000;width:100%;margin-top:10px;font-size:15px;cursor:pointer}
+  button.elimina{background:var(--danger);color:#fff}
+ .salvataggio{border:2px solid var(--border);background:var(--card);padding:15px;border-radius:12px;margin-bottom:15px}
+ .salvataggio h3{color:var(--accent);margin-bottom:8px;font-size:18px}
+ .salvataggio p{color:var(--muted);font-size:14px;margin:4px 0}
+ .salvataggio img{width:100%;border-radius:10px;margin-top:10px;border:2px solid var(--border)} /* FOTO */
+ .vuoto{text-align:center;color:var(--muted);padding:40px 20px;font-size:16px}
 </style>
 </head>
 <body>
@@ -47,20 +57,25 @@ function G(k){return JSON.parse(localStorage.getItem(k)||'null')}
 function openNav(){document.getElementById("mySidebar").style.width = "260px";}
 function closeNav(){document.getElementById("mySidebar").style.width = "0";}
 
+// TEMA: applica quello salvato in impostazioni
+function applicaTema(){
+  let tema = localStorage.getItem('parky_tema') || 'dark';
+  if(tema === 'light') document.body.classList.add('light');
+  else document.body.classList.remove('light');
+}
+applicaTema(); // lo applica all'avvio
+
 function caricaSalvataggi(){
   const lista = document.getElementById('lista');
   lista.innerHTML = '';
   let trovato = false;
   let nomi = G('parky_nomi') || {};
- if(pos.foto){
-  html += `<img src="${pos.foto}" class="foto-salvata">`;
- }
 
   Object.keys(nomi).forEach(id => {
     let pos = G('parky_'+id);
     if(pos){
       trovato = true;
-      let fotoHTML = pos.foto? `<img src="${pos.foto}" alt="Foto parcheggio">` : '';
+      let fotoHTML = pos.foto? `<img src="${pos.foto}" alt="Foto parcheggio">` : ''; /* AGGIUNTA FOTO */
       let notaHTML = pos.nota? `<p><b>📝 Nota:</b> ${pos.nota}</p>` : '';
 
       lista.innerHTML += `
@@ -68,7 +83,7 @@ function caricaSalvataggi(){
           <h3>${nomi[id]}</h3>
           <p><b>📅 Data:</b> ${pos.data}</p>
           ${notaHTML}
-          ${fotoHTML}
+          ${fotoHTML} /* QUI ESCE LA FOTO */
           <p><b>📍 Lat:</b> ${pos.lat.toFixed(5)}</p>
           <p><b>📍 Lon:</b> ${pos.lon.toFixed(5)}</p>
           <button onclick="vai(${pos.lat},${pos.lon})">🗺️ PORTAMI ALLA MACCHINA</button>
