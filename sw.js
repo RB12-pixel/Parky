@@ -1,4 +1,4 @@
-const CACHE = 'parky-v4'; // CAMBIATO VERSIONE
+const CACHE = 'parky-v4';
 const FILES = ['./','./index.html','./manifest.json'];
 
 self.addEventListener('install', e => {
@@ -11,7 +11,7 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-// NUOVO: GESTISCE LA SVEGLIA
+// QUESTO FA APRIRE L'APP QUANDO CLICCHI LA NOTIFICA
 self.addEventListener('notificationclick', e => {
   e.notification.close();
   e.waitUntil(clients.openWindow('./'));
