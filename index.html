@@ -167,39 +167,33 @@ async function chiediPermessoNotifiche(){
 }
 chiediPermessoNotifiche();
 
-// PROGRAMMA LE NOTIFICHE
-function programmaNotifica(fineTimestamp){
-  if(!('serviceWorker' in navigator)) return;
+async function programmaNotifica(fineTimestamp){ // 1
+  if(!('serviceWorker' in navigator)) return; // 2
   
-  let diff = fineTimestamp - Date.now();
-  if(diff <= 0) return;
+  let reg = await navigator.serviceWorker.ready; // 3
+  let diff = fineTimestamp - Date.now(); // 4
+  if(diff <= 0) return; // 5
 
-  // NOTIFICA 5 MIN PRIMA
-  let diffPreavviso = diff - (5 * 60 * 1000);
-  if(diffPreavviso > 0){
-    setTimeout(() => {
-      navigator.serviceWorker.ready.then(reg => {
-        reg.showNotification('⚠️ PARKY - Mancano 5 minuti', {
-          body: 'Il disco scade tra poco. Preparati!',
-          icon: './manifest.json',
-          vibrate: [100, 50, 100]
-        });
-      });
-    }, diffPreavviso);
-  }
+  // NOTIFICA 5 MIN PRIMA // 6
+  let preavviso = fineTimestamp - (5 * 60 * 1000); // 7
+  if(preavviso > Date.now()){ // 8
+    await reg.showNotification('⚠️ PARKY - Mancano 5 minuti', { // 9
+      body: 'Il disco scade tra poco. Preparati!', // 10
+      icon: './icon-192.png', // 11
+      tag: 'parky-preavviso', // 12
+      showTrigger: new TimestampTrigger(preavviso) // 13
+    }); // 14
+  } // 15
 
-  // NOTIFICA QUANDO SCADE
-  setTimeout(() => {
-    navigator.serviceWorker.ready.then(reg => {
-      reg.showNotification('🚗 PARKY - TACHI SCADUTO!', {
-        body: 'Sposta l\'auto prima della multa! 🔔',
-        icon: './manifest.json',
-        vibrate: [200, 100, 200, 100, 200],
-        requireInteraction: true
-      });
-    });
-  }, diff);
-}
+  // NOTIFICA SCADENZA // 16
+  await reg.showNotification('🚗 PARKY - TACHI SCADUTO!', { // 17
+    body: 'Sposta l\'auto prima della multa! 🔔', // 18
+    icon: './icon-192.png', // 19
+    tag: 'parky-scadenza', // 20
+    requireInteraction: true, // 21
+    showTrigger: new TimestampTrigger(fineTimestamp) // 22
+  }); // 23
+} // 24
 
 function testNotifica(){
   if(Notification.permission !== 'granted'){
