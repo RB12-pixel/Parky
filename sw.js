@@ -1,4 +1,4 @@
-const CACHE = 'parky-v2'; // ho cambiato v1 -> v2 così si aggiorna
+const CACHE = 'parky-v3'; // ho cambiato v1 -> v2 così si aggiorna
 
 self.addEventListener('install', e => {
   e.waitUntil(
