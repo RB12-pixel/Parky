@@ -187,6 +187,12 @@ function avviaTachi(){
   if(fineData < new Date()) fineData.setDate(fineData.getDate() + 1);
 
   S('parky_tachi_fine', fineData.getTime());
+
+let wakeLock = null;
+async function attivaWakeLock(){
+  try{ wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
+}
+attivaWakeLock(); // mettilo quando avvii il tachi
   
   programmaNotifica(fineData.getTime()); // <-- AGGIUNGI SOLO QUESTA
   
