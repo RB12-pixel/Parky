@@ -202,29 +202,21 @@ async function chiediPermessoNotifiche(){
 chiediPermessoNotifiche();
 
 async function programmaNotifica(fineTimestamp){
-  if(!('serviceWorker' in navigator)) return alert("SW non supportato");
+  if(!('serviceWorker' in navigator)) return;
 
   const reg = await navigator.serviceWorker.ready;
-  await reg.getNotifications().then(notifs => notifs.forEach(n => n.close()));
+  
+  // Cancella timer vecchi
+  reg.active.postMessage({type: 'CANCEL_TACHI'});
 
-  if(!('showTrigger' in window)){
-    alert("Il tuo telefono non supporta notifiche programmate. Prova Chrome Android aggiornato");
-    return;
-  }
-
-  // NOTIFICA SCADENZA
-  try {
-    await reg.showNotification('🚗 PARKY - TACHI SCADUTO!', {
-      body: 'Sposta l\'auto prima della multa! 🔔',
-      icon: './icon-192.png',
-      tag: 'parky-scadenza',
-      showTrigger: new TimestampTrigger(fineTimestamp),
-      requireInteraction: true
-    });
-    console.log("Notifica programmata per:", new Date(fineTimestamp));
-  } catch(e){
-    alert("Errore notifica: " + e);
-  }
+  // Manda al SW quando far suonare
+  reg.active.postMessage({
+    type: 'SET_TACHI',
+    scadenza: fineTimestamp,
+    preavviso: fineTimestamp - (5 * 60 * 1000)
+  });
+  
+  console.log("Tachi programmato per:", new Date(fineTimestamp));
 }
 
 function testNotifica(){
