@@ -89,6 +89,7 @@
     <input type="time" id="ora">
     <button id="btnTachi" onclick="avviaTachi()">AVVIA TACHI</button>
 <button onclick="testNotifica()" style="background:#444; margin-top:10px;">TEST NOTIFICA ORA</button>
+<button onclick="chiediPermesso()" style="background:#16a34a; margin-top:5px;">DA PERMESSO NOTIFICHE</button>
 <p style="font-size:13px; color:#aaa; text-align:center; margin-top:5px; font-weight:bold;">
   Se ti si impallano le notifiche, usa questo!
 </p>
@@ -122,6 +123,11 @@ function closeNav(){document.getElementById("mySidebar").style.width = "0";}
 // TEMA
 function applicaTema(){let tema = localStorage.getItem('parky_tema') || 'dark';if(tema === 'light') document.body.classList.add('light');else document.body.classList.remove('light');}
 applicaTema();
+
+async function chiediPermesso(){
+  const permesso = await Notification.requestPermission();
+  alert("Permesso: " + permesso); // deve dire "granted"
+}
 
 function getNomiAuto(){let nomi = G('parky_nomi');if(!nomi){nomi = {auto1: '🚗 Auto 1'};S('parky_nomi', nomi);}return nomi;}
 
