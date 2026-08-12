@@ -1,4 +1,4 @@
-const CACHE = 'parky-v4'; // alza la versione così si aggiorna
+const CACHE = 'parky-v5'; // alza la versione così si aggiorna
 const FILES = ['./','./index.html','./manifest.json','./icon-192.png'];
 
 self.addEventListener('install', e => {
