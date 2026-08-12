@@ -195,39 +195,44 @@ async function chiediPermessoNotifiche(){
 }
 chiediPermessoNotifiche();
 
-function programmaNotifica(fineTimestamp){
-  if(!('serviceWorker' in navigator)) return;
+async function programmaNotifica(fineTimestamp){
+  if(!('serviceWorker' in navigator) || !('showTrigger' in Notification.prototype)) {
+    alert("Le notifiche programmate funzionano solo su Chrome Android");
+    return;
+  }
+
+  const reg = await navigator.serviceWorker.ready;
   
-  let diff = fineTimestamp - Date.now();
-  if(diff <= 0) return;
+  // Cancella vecchie notifiche di Parky
+  const tags = ['parky-preavviso', 'parky-scadenza'];
+  tags.forEach(async tag => {
+    const notifs = await reg.getNotifications({tag});
+    notifs.forEach(n => n.close());
+  });
 
   // NOTIFICA 5 MIN PRIMA
-  let diffPreavviso = diff - (5 * 60 * 1000);
-  if(diffPreavviso > 0){
-    setTimeout(() => {
-      navigator.serviceWorker.ready.then(reg => {
-        reg.showNotification('⚠️ PARKY - Mancano 5 minuti', {
-          body: 'Il disco scade tra poco. Preparati!',
-          icon: './icon-192.png',
-          tag: 'parky-preavviso',
-          vibrate: [100, 50, 100]
-        });
-      });
-    }, diffPreavviso);
+  let diffPreavviso = fineTimestamp - (5 * 60 * 1000);
+  if(diffPreavviso > Date.now()){
+    await reg.showNotification('⚠️ PARKY - Mancano 5 minuti', {
+      body: 'Il disco scade tra poco. Preparati!',
+      icon: './icon-192.png',
+      badge: './icon-192.png',
+      tag: 'parky-preavviso',
+      showTrigger: new TimestampTrigger(diffPreavviso),
+      vibrate: [100, 50, 100]
+    });
   }
 
   // NOTIFICA SCADENZA
-  setTimeout(() => {
-    navigator.serviceWorker.ready.then(reg => {
-      reg.showNotification('🚗 PARKY - TACHI SCADUTO!', {
-        body: 'Sposta l\'auto prima della multa! 🔔',
-        icon: './icon-192.png',
-        tag: 'parky-scadenza',
-        requireInteraction: true,
-        vibrate: [200, 100, 200, 100, 200]
-      });
-    });
-  }, diff);
+  await reg.showNotification('🚗 PARKY - TACHI SCADUTO!', {
+    body: 'Sposta l\'auto prima della multa! 🔔',
+    icon: './icon-192.png',
+    badge: './icon-192.png',
+    tag: 'parky-scadenza',
+    showTrigger: new TimestampTrigger(fineTimestamp),
+    requireInteraction: true,
+    vibrate: [200, 100, 200, 100, 200]
+  });
 }
 
 function testNotifica(){
